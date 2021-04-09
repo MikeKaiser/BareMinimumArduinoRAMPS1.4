@@ -50,8 +50,8 @@ const int Therm_0 = A13;
 const int Therm_1 = A14;
 const int Therm_2 = A15;
 
-const int Aux1A_3 = 2;
-const int Aux1A_4 = 1;
+const int Aux1A_3_TX = 1; // TX
+const int Aux1A_4_RX = 0; // RX
 const int Aux1S_3 = A3;
 const int Aux1S_4 = A4;
 
@@ -68,10 +68,62 @@ const int Aux2_10 = A11;
 
 void setup()
 {
-  pinMode(Button_Stop, INPUT_PULLUP);
-  pinMode(Button_Yes,  INPUT_PULLUP);
+  pinMode(Button_Stop,  INPUT_PULLUP);
+  pinMode(Button_Yes,   INPUT_PULLUP);
   pinMode(Button_UpDn0, INPUT_PULLUP);
   pinMode(Button_UpDn1, INPUT_PULLUP);
+
+  pinMode(Axis_X_Dir,   OUTPUT);
+  pinMode(Axis_X_Step,  OUTPUT);
+  pinMode(Axis_X_En,    OUTPUT);
+  pinMode(Axis_Y_Dir,   OUTPUT);
+  pinMode(Axis_Y_Step,  OUTPUT);
+  pinMode(Axis_Y_En,    OUTPUT);
+  pinMode(Axis_Z_Dir,   OUTPUT);
+  pinMode(Axis_Z_Step,  OUTPUT);
+  pinMode(Axis_Z_En,    OUTPUT);
+  pinMode(Axis_E1_Dir,  OUTPUT);
+  pinMode(Axis_E1_Step, OUTPUT);
+  pinMode(Axis_E1_En,   OUTPUT);
+  pinMode(Axis_E0_Dir,  OUTPUT);
+  pinMode(Axis_E0_Step, OUTPUT);
+  pinMode(Axis_E0_En,   OUTPUT);
+  
+  pinMode(FET_10,       OUTPUT);
+  pinMode(FET_9,        OUTPUT);
+  pinMode(FET_8,        OUTPUT);
+  
+  pinMode(Stop_0,       INPUT_PULLUP);
+  pinMode(Stop_1,       INPUT_PULLUP);
+  pinMode(Stop_2,       INPUT_PULLUP);
+  pinMode(Stop_3,       INPUT_PULLUP);
+  pinMode(Stop_4,       INPUT_PULLUP);
+  pinMode(Stop_5,       INPUT_PULLUP);
+  
+  pinMode(I2C_SDA,      INPUT_PULLUP);
+  pinMode(I2C_SCL,      INPUT_PULLUP);
+  
+  pinMode(Servo_0,      INPUT_PULLUP);
+  pinMode(Servo_1,      INPUT_PULLUP);
+  pinMode(Servo_2,      INPUT_PULLUP);
+  pinMode(Servo_3,      INPUT_PULLUP);
+  
+  pinMode(Therm_0,      INPUT);
+  pinMode(Therm_1,      INPUT);
+  pinMode(Therm_2,      INPUT);
+  
+  pinMode(Aux1S_3,      INPUT_PULLUP);
+  pinMode(Aux1S_4,      INPUT_PULLUP);
+  
+  pinMode(Aux2_3,       INPUT_PULLUP);
+  pinMode(Aux2_4,       INPUT_PULLUP);
+  pinMode(Aux2_5,       INPUT_PULLUP);
+  pinMode(Aux2_6,       INPUT_PULLUP);
+  pinMode(Aux2_7,       INPUT_PULLUP);
+  pinMode(Aux2_8,       INPUT_PULLUP);
+  pinMode(Aux2_9,       INPUT_PULLUP);
+  pinMode(Aux2_10,      INPUT_PULLUP);
+
   
   Serial.begin(250000);
   lcd.begin();
@@ -114,18 +166,49 @@ void loop()
 {
   lcd.clearBuffer();
   
-  updateTime();
-  lcd.setCursor(8,16); lcd.print(digitalRead(Button_Stop));
-  lcd.setCursor(8,24); lcd.print(digitalRead(Button_Yes));
-  lcd.setCursor(8,32); lcd.print(digitalRead(Button_UpDn0));
-  lcd.setCursor(8,40); lcd.print(digitalRead(Button_UpDn1));
+  int i=0, j=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Button_Stop));  i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Button_Yes));   i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Button_UpDn0)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Button_UpDn1)); i+=8;
+  lcd.setCursor(i,j); lcd.print("millis() = "); lcd.print(millis());
+
+  j+=8;
+  i=0;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Stop_0)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Stop_1)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Stop_2)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Stop_3)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Stop_4)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Stop_5)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(I2C_SDA)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(I2C_SCL)); i+=8;
+  
+  j+=8;
+  i=0;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Servo_0)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Servo_1)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Servo_2)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Servo_3)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux1S_3)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux1S_4)); i+=8;
+  
+  j+=8;
+  i=0;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_3)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_4)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_5)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_6)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_7)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_8)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_9)); i+=8;
+  lcd.setCursor(i,j); lcd.print(digitalRead(Aux2_10)); i+=8;
+
+  j+=8;
+  i=0;
+  lcd.setCursor(i,j); lcd.print(analogRead(Therm_0)); i+= 3*8+4;
+  lcd.setCursor(i,j); lcd.print(analogRead(Therm_1)); i+= 3*8+4;
+  lcd.setCursor(i,j); lcd.print(analogRead(Therm_2)); i+= 3*8+4;
   
   lcd.sendBuffer();
-}
-
-void updateTime()
-{
-  lcd.setCursor(0, 8);
-  lcd.print("millis() = ");     
-  lcd.print(millis());
 }
